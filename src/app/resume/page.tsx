@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { api } from "~/trpc/react";
 import { resumeFormSchema } from "./resumeFormSchema";
 import { useEffect } from "react";
+import ResumeFileHandler from "./resume-file-handler";
 
 type Experience = {
   company: string;
@@ -62,9 +63,9 @@ export default function ResumeFormPage() {
     if (userData) {
       form.reset(userData);
     }
-  }, [userData])
+  }, [userData, form])
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control: form.control,
     name: "experience",
   });
@@ -84,167 +85,185 @@ export default function ResumeFormPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto py-10">
+    <div className="max-w-5xl mx-auto py-10">
       <h1 className="text-3xl font-bold mb-8">Resume Form</h1>
-      <Form {...form}>
-        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-          <FormField
-            control={form.control}
-            name="name"
-            rules={{ required: "Name is required" }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="email"
-            rules={{ required: "Email is required" }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input type="email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="phone"
-            rules={{ required: "Phone is required" }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="location"
-            rules={{ required: "Location is required" }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Location</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="skills"
-            rules={{ required: "Skills are required" }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Skills</FormLabel>
-                <FormControl>
-                  <Textarea {...field} placeholder="e.g. TypeScript, React, Node.js" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div>
-            <FormLabel>Experience</FormLabel>
-            <div className="space-y-4 mt-2">
-              {fields.map((field, idx) => (
-                <div key={field.id} className="border rounded p-4 relative bg-muted">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <FormField
-                      control={form.control}
-                      name={`experience.${idx}.company`}
-                      rules={{ required: "Company is required" }}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Company</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name={`experience.${idx}.year`}
-                      rules={{ required: "Year is required" }}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Year</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="e.g. 2022" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name={`experience.${idx}.description`}
-                      rules={{ required: "Description is required" }}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Description</FormLabel>
-                          <FormControl>
-                            <Textarea {...field} placeholder="Describe your role" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+      <div className="flex gap-6 mx-auto">
+
+        <Form {...form}>
+          <form className="space-y-6 flex-1/2" onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
+              name="name"
+              rules={{ required: "Name is required" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              rules={{ required: "Email is required" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input type="email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="phone"
+              rules={{ required: "Phone is required" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="location"
+              rules={{ required: "Location is required" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Location</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="skills"
+              rules={{ required: "Skills are required" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Skills</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} placeholder="e.g. TypeScript, React, Node.js" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div>
+              <FormLabel>Experience</FormLabel>
+              <div className="space-y-4 mt-2">
+                {fields.map((field, idx) => (
+                  <div key={field.id} className="border rounded p-4 relative bg-muted">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <FormField
+                        control={form.control}
+                        name={`experience.${idx}.company`}
+                        rules={{ required: "Company is required" }}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Company</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`experience.${idx}.year`}
+                        rules={{ required: "Year is required" }}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Year</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="e.g. 2022" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`experience.${idx}.description`}
+                        rules={{ required: "Description is required" }}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Description</FormLabel>
+                            <FormControl>
+                              <Textarea {...field} placeholder="Describe your role" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    {fields.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-2 right-2"
+                        onClick={() => remove(idx)}
+                        aria-label="Remove experience"
+                      >
+                        <TrashIcon />
+                      </Button>
+                    )}
                   </div>
-                  {fields.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-2 right-2"
-                      onClick={() => remove(idx)}
-                      aria-label="Remove experience"
-                    >
-                      <TrashIcon />
-                    </Button>
-                  )}
-                </div>
-              ))}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => append({ company: "", year: "", description: "" })}
-                className="flex items-center gap-2"
-              >
-                <PlusIcon /> Add Experience
-              </Button>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => append({ company: "", year: "", description: "" })}
+                  className="flex items-center gap-2"
+                >
+                  <PlusIcon /> Add Experience
+                </Button>
+              </div>
             </div>
-          </div>
-          <Button
-            type="submit"
-            className="w-full mt-6"
-            disabled={mutation.isPending}
-          >
-            {mutation.isPending ? "Submitting..." : "Submit Resume"}
-          </Button>
-          {mutation.isError && (
-            <div className="text-red-500 mt-2 text-sm">
-              {mutation.error?.message || "Failed to submit resume."}
-            </div>
-          )}
-        </form>
-      </Form>
+            <Button
+              type="submit"
+              className="w-full mt-6"
+              disabled={mutation.isPending}
+            >
+              {mutation.isPending ? "Submitting..." : "Submit Resume"}
+            </Button>
+            {mutation.isError && (
+              <div className="text-red-500 mt-2 text-sm">
+                {mutation.error?.message || "Failed to submit resume."}
+              </div>
+            )}
+          </form>
+        </Form>
+        <div className=" flex-1/2">
+          <label>Upload Resume (PDF)</label>
+          <ResumeFileHandler className="mt-3" onChooseResume={(data) => {
+            form.setValue("name", data.name ?? "");
+            form.setValue("email", data.email ?? "");
+            form.setValue("phone", data.phone_number ?? "");
+            form.setValue("skills", data.skills?.join(", ") ?? "");
+            // clear fields experience
+            replace(data.experiences?.map(exp => ({
+              company: exp.company ?? "",
+              year: exp.year ?? "",
+              description: exp.description ?? "",
+            })) ?? [{ company: "", year: "", description: "" }]);
+          }}></ResumeFileHandler>
+        </div>
+      </div>
     </div>
   );
 }

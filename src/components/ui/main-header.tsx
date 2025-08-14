@@ -3,6 +3,7 @@ import { SessionProvider } from 'next-auth/react';
 import { FaCloud } from "react-icons/fa";
 import { auth } from "~/server/auth";
 import AccountHeaderDropdown from "./account-header-dropdown";
+import Link from "next/link";
 
 export default async function MainHeader() {
 
@@ -19,7 +20,7 @@ export default async function MainHeader() {
       ) : (
         <SessionProvider session={session}>
           <Button asChild>
-            <a href="/api/auth/signin">Sign In</a>
+            <Link href="/api/auth/signin">Sign In</Link>
           </Button>
         </SessionProvider>
       )}

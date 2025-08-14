@@ -123,4 +123,20 @@
   body {
     @apply bg-background text-foreground;
   }
+  .gradient-ai {
+    @apply bg-gradient-to-r from-purple-400 via-pink-400 to-red-400;
+  }
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 2s linear infinite;
+}
+@keyframes gradient-x {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
 }

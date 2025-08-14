@@ -1,11 +1,9 @@
 'use client'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import React from 'react'
-import { Button } from "./button";
-import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 import type { User } from "next-auth";
-import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
+import { Button } from "./button";
 
 type Props = {
   user: User

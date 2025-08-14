@@ -1,24 +1,19 @@
 import "~/styles/globals.css";
 
 import { type Metadata } from "next";
-import { Geist, DM_Sans } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 
-import { TRPCReactProvider } from "~/trpc/react";
-import MainHeader from "~/components/ui/main-header";
-import { auth } from "~/server/auth";
 import AppHeader from "~/components/ui/app-header";
+import MainHeader from "~/components/ui/main-header";
 import { Toaster } from "~/components/ui/sonner";
+import { auth } from "~/server/auth";
+import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata: Metadata = {
   title: "Awesome Rio's App",
   description: "CV reader and job application tracker",
   icons: [{ rel: "icon", url: "/favicon.png" }],
 };
-
-const geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-geist-sans",
-});
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -42,7 +37,7 @@ export default async function RootLayout({
             {children}
           </div>
         </TRPCReactProvider>
-        <Toaster />
+        <Toaster richColors closeButton />
       </body>
     </html>
   );

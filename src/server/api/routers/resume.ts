@@ -1,6 +1,6 @@
 import { resumeFormSchema as resumeSchema } from "~/app/resume/resumeFormSchema";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import type z from "zod";
+import z from "zod";
 
 type Resume = z.infer<typeof resumeSchema>;
 

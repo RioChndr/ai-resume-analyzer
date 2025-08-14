@@ -1,5 +1,11 @@
 import { createEnv } from "@t3-oss/env-nextjs";
+import dotenv from 'dotenv';
+import dotenvExpand from 'dotenv-expand';
 import { z } from "zod";
+
+// Load environment variables from .env file
+const myEnv = dotenv.config();
+dotenvExpand.expand(myEnv);
 
 export const env = createEnv({
   /**
