@@ -1,0 +1,154 @@
+{
+  "name": "PDF Resume To JSON — Agent AI",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "resume-pdf-extractor",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -64,
+        0
+      ],
+      "id": "ce19fe3f-e0d2-49c7-ba32-b5dd216caf5d",
+      "name": "Webhook",
+      "webhookId": "c9c50074-07e7-4554-9a63-790cf207155f"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        144,
+        0
+      ],
+      "id": "21ae215c-1692-4176-a4ae-03516cddf4bf",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemma-3n-e2b-it",
+          "mode": "list",
+          "cachedResultName": "models/gemma-3n-e2b-it"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Analyze the text below and identify resume information.\n\nFormat the output as a JSON Object where have all these data:\n- name\n- phone number\n- email\n- skills\n- experiences (array of `company`, `year`, `description`)\n\n{{ $json.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        336,
+        0
+      ],
+      "id": "72a52cc7-c19d-40b1-a342-28c0e78330ed",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "QEPbCEqxtSn2SXMV",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "let message = $json.content.parts[0].text\n\nmessage = message.replace(\"```json\", '')\nmessage = message.replace(\"```\", '')\n\nconst res = JSON.parse(message)\nif(Array.isArray(res)){\n  return res[0]\n}\nreturn res"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        0
+      ],
+      "id": "a80f97eb-5239-40bc-a403-4a98f795b0f5",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        896,
+        0
+      ],
+      "id": "3ac9863e-5013-401a-a35a-dc8c7e0fc1c4",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e10b4d6c-d1c5-40d5-92eb-951c55dc06d4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6efb58fb1503b5b52e4482a8c6a904ea66d7b5f8104544e6c1dcf4135019b605"
+  },
+  "id": "osXaFiNEonQDu4Cf",
+  "tags": []
+}
